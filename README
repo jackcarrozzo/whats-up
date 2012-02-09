@@ -7,6 +7,9 @@ and shows you which of them are above the horizon in your location.
 Once that is solid, it will also control a polar device for a camera,
 laser, or telescope.
 
+The celestial math is done by PyEphem:
+http://rhodesmill.org/pyephem/
+
 TODO: 
 - Add configuration for things like location, timezone
 - Allow a directory of TLEs to be passed and parsed
