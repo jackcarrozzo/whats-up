@@ -1,0 +1,14 @@
+What's Up v0.1
+Jack Carrozzo <jack@crepinc.com>
+
+The code currently takes a list of TLEs from a text file
+and shows you which of them are above the horizon in your location.
+
+Once that is solid, it will also control a polar device for a camera,
+laser, or telescope.
+
+TODO: 
+- Add configuration for things like location, timezone
+- Allow a directory of TLEs to be passed and parsed
+- Write the serial motion control commands and such
+- Fix the table formatting (sometimes it gets upset)
