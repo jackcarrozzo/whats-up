@@ -10,6 +10,8 @@ laser, or telescope.
 The celestial math is done by PyEphem:
 http://rhodesmill.org/pyephem/
 
+TLE source: http://www.tle.info/data/
+
 TODO: 
 - Add configuration for things like location, timezone
 - Allow a directory of TLEs to be passed and parsed
