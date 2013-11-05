@@ -1,11 +1,16 @@
-What's Up v0.1
+What's Up v0.2
 Jack Carrozzo <jack@crepinc.com>
 
-The code currently takes a list of TLEs from a text file
-and shows you which of them are above the horizon in your location.
+This code is meant to allow you to see what celestial bodies are above 
+the horizon, then follow them through the sky with a telescope, camera, 
+or laser. Eventually I hope to support nontrivial kinematics and active
+control as well.
 
-Once that is solid, it will also control a polar device for a camera,
-laser, or telescope.
+In its current state, cloning the git repo and running without arguments
+will print a list of viewable satellites currently above the horizon in
+the location specified in base.conf. While the original code was intended
+for sats only, it should be quick to expand the scope to planets and stars
+as well.
 
 The celestial math is done by PyEphem:
 http://rhodesmill.org/pyephem/
@@ -14,7 +19,16 @@ https://pypi.python.org/pypi/pyephem/
 TLE source: http://www.tle.info/data/
 
 TODO: 
-- Add configuration for things like location, timezone
+- Write documentation and proper help
+- Add configuration for things like location, timezone (in progress)
 - Allow a directory of TLEs to be passed and parsed
-- Write the serial motion control commands and such
+- Star and Planet support
+- Write TLE update script
+- Write the serial motion control commands
 - Fix the table formatting (sometimes it gets upset)
+
+Future features:
+- Nontrivial kinematics (N axis arms, non-polar/non-az-el coords)
+- Star finder coord calibration
+- Visual tracking
+- Unknown object path calc (ie, determine TLE from observed path)
