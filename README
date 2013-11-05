@@ -9,6 +9,7 @@ laser, or telescope.
 
 The celestial math is done by PyEphem:
 http://rhodesmill.org/pyephem/
+https://pypi.python.org/pypi/pyephem/
 
 TLE source: http://www.tle.info/data/
 
