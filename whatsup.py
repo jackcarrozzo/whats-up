@@ -33,8 +33,8 @@ group.add_option("-t",  dest="object",
 group.add_option("-p",  dest="azel",
   help="Point to a given Az-El vector (ie, \"280.4,71.0\")")
 group.add_option("-a",  dest="abspos",
-  help="Point to a given absolute coord")
-group.add_option("-T", "--test",    action="store_true",dest="action",
+  help="Point to a given absolute (Ra-Dec) coord")
+group.add_option("-T", "--test",    action="store_true",dest="test",
   help="Test the platform (spin both axis)")
 parser.add_option_group(group)
 
@@ -128,19 +128,54 @@ def printSats(s):
   	print "%s\t% 3.2f\t\t% 3.2f\t\t% .0f" % (
   		namestr,math.degrees(somesat.az),math.degrees(somesat.alt),
   		somesat.range/1000)
-	
-def actionList():
+
+def parseAbsCoord(ins):
+  # TODO: find a way to sanity check
+  
+  parts=ins.split(',')
+  if len(parts)!=2:
+    print "Error parsing absolute coord string '%s': expected comma separated pair of values." % (
+      ins)
+    print "Examples: 15:49:53,-20:4:34 or 15.574,-20.980"
+    sys.exit(1)
+
+  return ephem.hours(parts[0]),ephem.degrees(parts[1])
+
+def actionAbs(coords,loopflag):
+  body=ephem.FixedBody()
+  (body._ra,body._dec)=parseAbsCoord(coords)
+
+  runflag=True
+  while runflag:
+    me.date=strftime("%Y/%m/%d %H:%M:%S",gmtime())
+    body.compute(me)
+    print "body at az %.2f, alt %.2f." % (math.degrees(body.az),math.degrees(body.alt))
+    if loopflag : sleep(1)
+    else:       runflag=False
+
+def actionList(loopflag):
   sats=readTLEs(options.tlefile)
 
+  # TODO: clean this up
   runflag=True  
   while runflag:
-    if options.follow: os.system("clear")
+    if loopflag: os.system("clear")
     showsats=satsAboveHorizon(sats)
     printSats(showsats)
     
-    if options.follow : sleep(0.05)
+    if loopflag : sleep(0.5) # TODO: put in conf
     else              : runflag=False
 
-actionList()
-
+# parse args and run the right funcs
+if options.object:
+  print "vectoring to object %s, follow: %s" % (options.object,options.follow)
+elif options.azel:
+  print "vectoring to az el %s, follow: %s" % (options.azel,options.follow)
+elif options.abspos:
+  #print "vectoring to abs pos %s, follow: %s" % (options.abspos,options.follow)
+  actionAbs(options.abspos,options.follow)
+elif options.test:
+  print "running test code."
+else:
+  actionList(options.follow)
 
