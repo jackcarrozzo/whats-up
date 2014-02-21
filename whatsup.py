@@ -9,6 +9,10 @@ import math
 import sys
 import os
 
+# DISCLAIMER! I wrote this when I was just starting to use Python, please
+# don't judge my abilities from it. I'd really like to rewrite it when 
+# I have time.
+
 defaultconfig="base.conf"
 defaulttle   ="tle/visual.txt"
 
