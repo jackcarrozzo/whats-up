@@ -9,10 +9,6 @@ import math
 import sys
 import os
 
-# DISCLAIMER! I wrote this when I was just starting to use Python, please
-# don't judge my abilities from it. I'd really like to rewrite it when 
-# I have time.
-
 defaultconfig="base.conf"
 defaulttle   ="tle/visual.txt"
 
@@ -32,6 +28,8 @@ parser.add_option("-f", dest="follow", action="store_true", default=False,
 group=OptionGroup(parser,"Actions")
 group.add_option("-l", "--list",    action="store_true",dest="action",default=True,
   help="List objects currently above the horizon (default)")
+group.add_option("-n",  dest="newlist",
+  help="show pos data for each tle")
 group.add_option("-t",  dest="object",
   help="Point to a specified object")
 group.add_option("-p",  dest="azel",
@@ -157,6 +155,62 @@ def actionAbs(coords,loopflag):
     if loopflag : sleep(1)
     else:       runflag=False
 
+
+def findSat(sats, name):
+  for s in sats:
+    if s.name==name:
+      return s
+  return None
+
+def actionObject(obj_name, to_follow):
+  keepfollowing = True
+  while keepfollowing:
+    keepfollowing = to_follow #lol
+
+    sats=readTLEs(options.tlefile)
+    oursat=findSat(sats, obj_name)
+   
+    if not oursat:
+      print "sorry, we didn't find '%s' among %s" % (obj_name, ' '.join([s.name for s in sats])) 
+
+    me.date=strftime("%Y/%m/%d %H:%M:%S",gmtime())
+    oursat.compute(me)
+
+    print "# ok, for us at %s, %s at %s Z," % (me.lat, me.lon, me.date)
+    print "# object %s is:" % oursat.name
+    print "--- at RA %s, Decl %s" % (oursat.a_ra, oursat.a_dec) 
+    print "--- which is %3.2f degrees to you at %3.2f degrees el" % (
+      math.degrees(oursat.az), math.degrees(oursat.alt))
+    print "--- at a range of %s km" % oursat.range
+
+    sleep(0.5)
+    os.system("clear")
+
+def actionSet(to_follow):
+  # show highest obj in set
+  
+  sats=readTLEs(options.tlefile)
+
+  runflag=True
+  while runflag:
+    me.date=strftime("%Y/%m/%d %H:%M:%S",gmtime())
+    [s.compute(me) for s in sats]
+    sats=sorted(sats, key=lambda s: (-1*math.degrees(s.alt)))
+    
+    print "# ok, for us at %s, %s at %s Z," % (me.lat, me.lon, me.date)
+    for s in sats:
+      print "# object %s is:" % s.name
+      print "--- at RA %s, Decl %s" % (s.a_ra, s.a_dec)
+      print "--- which is %3.2f degrees to us at %3.2f degrees el" % (
+        math.degrees(s.az), math.degrees(s.alt))
+      print "--- at a range of %s km" % s.range
+
+    if to_follow:
+      sleep(0.5)
+      os.system("clear")
+    else:
+      runflag = None
+
 def actionList(loopflag):
   sats=readTLEs(options.tlefile)
 
@@ -172,7 +226,10 @@ def actionList(loopflag):
 
 # parse args and run the right funcs
 if options.object:
-  print "vectoring to object %s, follow: %s" % (options.object,options.follow)
+  #print "vectoring to object %s, follow: %s" % (options.object,options.follow)
+  actionObject(options.object, options.follow)
+elif options.newlist:
+  actionSet(options.follow)
 elif options.azel:
   print "vectoring to az el %s, follow: %s" % (options.azel,options.follow)
 elif options.abspos:
